@@ -12,11 +12,14 @@ module GrapeLogging
 
       private
       def replace_parameters(parameters)
-        @filter_parameters.each do |parameter_name|
-          if parameters.key?(parameter_name.to_s)
-            parameters[parameter_name.to_s] = @replacement
+        parameters.each do |key, value|
+          if @filter_parameters.collect(&:to_s).include?(key.to_s)
+            parameters[key] = @replacement
+          elsif value.respond_to?(:keys)
+            parameters[key] = replace_parameters(value)
           end
         end
+
         parameters
       end
     end
